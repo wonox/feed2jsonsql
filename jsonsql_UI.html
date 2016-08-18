@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>jsonsqlによるCiNii Articlesデータの検索テスト</title>
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="jsonsql-0.1.js"></script>
+  <link rel="stylesheet" href="papier.min.css">
+
+<script>
+function my1() {
+	// var keyname = document.getElementById('my-text').value; // no jquery
+	var keyname = $('#my-form [name=my-text]').val(); // jquery
+	removeall("output");
+	if (keyname == '') {removeall("output");};
+	main(keyname);
+}
+function removeall (id){
+	var aNode = document.getElementById(id);
+	for (var i =aNode.childNodes.length-1; i>=0; i--) {
+		aNode.removeChild(aNode.childNodes[i]);
+	}
+}
+
+</script>
+</head>
+<body>
+
+<form name="my-form" id="my-form" method="post">
+  <input type="text" name="my-text" id="my-text" placeholder="キーワードを一つ入力してください 例：0387-8953" />
+  <button type="button" value="Add" onclick="my1()" onKeyPress="my1()" class="bg-red">submit</button></form>
+
+<div class="wrapper row demo">
+  <ul id="output"></ul>
+</div>
+<script>
+/*jsonデータの一部に項目の欠損があると動かない*/
+function main(opurl) {
+	//alert(opurl);
+//$(function() {
+
+  $.getJSON("feedtest5.json" , function(json) {
+var jdata = jsonsql.query("select * from json.channel where (title.match(/" + opurl + "/) || author.match(/" + opurl + "/) || publicationDate.match(/" + opurl + "/)) order by publicationDate desc",json);
+//var jdata = jsonsql.query("select * from json.channel where (title.match(/特集/)) order by publicationDate asc limit 3",json);
+//var jdata = jsonsql.query("select * from json.channel where (title.match(/大学/)) order by title desc",json);
+
+for(var i in jdata){
+  $('ul').append('<div class="col-sm-6 bg-white"><h3 lang="ja" class="card depth-4"><a href=\"'+ jdata[i].url +'\">'+ jdata[i].title + '</a> / ' + jdata[i].author + ' vol.' +jdata[i].volume + ' no.' + jdata[i].number + ' p.' + jdata[i].startingPage + '-' + jdata[i].endingPage + ' date:' + jdata[i].publicationDate+'</h3></div>');
+}
+  });
+//});
+}
+
+</script>
+</body>
+</html>
